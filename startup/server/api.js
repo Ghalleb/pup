@@ -14,12 +14,23 @@ import CommentMutations from '../../api/Comments/mutations';
 import '../../api/Documents/server/indexes';
 import '../../api/OAuth/server/methods';
 
+import Comments from '../../api/Comments/Comments';
+
 /*
   TODO:
 
   Why are nested queries not working? The parent query works great, but once that's
   resolved the subfields are _not_ resolved. What's up?
+
+  Found the answer. We need to have resolvers for Documents specifically,
+  not just on the root Query.
+
+  Also, Apollo has suggestions on modularizing the schema, though I'm not sure how
+  to apply it here. https://www.apollographql.com/docs/graphql-tools/generate-schema.html#modularizing
+
+  TODO New problem now that it's working: seems to call comments infinitely.
 */
+console.log('DocumentTypes', DocumentTypes);
 
 const schema = {
   typeDefs: gql`
@@ -51,6 +62,12 @@ const schema = {
     Mutation: {
       ...DocumentMutations,
       ...CommentMutations,
+    },
+    Document: {
+      comments: (parent, args) => {
+        console.log('Document Comments api queries', parent, args);
+        return Comments.find({ documentId: args.documentId }).fetch();
+      },
     },
     // Subscription: {
     //   ...DocumentSubscriptions,

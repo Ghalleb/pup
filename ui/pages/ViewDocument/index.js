@@ -27,7 +27,7 @@ class ViewDocument extends React.Component {
         {({ loading, data }) => {
           // TODO do we need to handle loading since that is handled by FetchData?
           if (!loading && data.document) {
-            console.log(data.document);
+            console.log('ViewDocument', data.document);
             return (
               <React.Fragment>
                 <StyledViewDocument>
